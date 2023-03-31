@@ -51,7 +51,7 @@ Nodo* crear_nodo(Process proceso) {
 };
 
 
-// Función para agregar un proceso a la cola (Push)
+// Función para agregar un proceso a la cola (Push), llama crear nodo
 void agregar_proceso(Queue* lista, Process proceso) {
     Nodo* nodo = crear_nodo(proceso);
     if (lista -> primero == NULL) {
@@ -110,8 +110,4 @@ void queue_clear(Queue* lista) {
     //aseguramos que el último sea null
     lista -> ultimo = NULL;
     lista -> largo = 0;
-}
-
-int main(){
-    return 0;
 }
