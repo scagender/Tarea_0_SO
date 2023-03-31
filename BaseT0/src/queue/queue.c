@@ -1,14 +1,8 @@
 #include "queue.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "../process/process.h"
 
-typedef struct process{
-
-    char* name;
-    int PID;
-
-} Process;
-////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 typedef struct Nodo {           //https://d-michail.github.io/assets/teaching/data-structures/018_QueueImplementation.en.pdf
     Process proceso;            //https://www.geeksforgeeks.org/queue-linked-list-implementation/
