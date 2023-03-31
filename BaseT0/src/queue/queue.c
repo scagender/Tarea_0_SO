@@ -5,12 +5,12 @@
 
 
 typedef struct Nodo {           //https://d-michail.github.io/assets/teaching/data-structures/018_QueueImplementation.en.pdf
-    Process proceso;            //https://www.geeksforgeeks.org/queue-linked-list-implementation/
+    Process* proceso;            //https://www.geeksforgeeks.org/queue-linked-list-implementation/
     struct Nodo* siguiente;     //https://www.infocodify.com/c-programming/queue
 } Nodo;
 
 
-typedef struct queue
+struct _Queue
 {
     int largo;
     Nodo* primero;
@@ -18,14 +18,15 @@ typedef struct queue
     //Hacerlo con nodos
     //struct queue* next; Para listas ligadas
 
-} Queue;
+};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+
 //Inicialización de la cola
-Queue* crear_lista() {
-    Queue* lista = malloc(sizeof(Queue));
+Queue crear_lista() {
+    Queue lista = (Queue) malloc(sizeof(struct _Queue));
     if (lista == NULL) {
         fprintf(stderr, "No hay memoria suficiente para crear la cola.\n");
         abort();
@@ -39,7 +40,7 @@ Queue* crear_lista() {
 
 
 // Función para crear un nodo de la cola
-Nodo* crear_nodo(Process proceso) {
+Nodo* crear_nodo(Process* proceso) {
     Nodo* nodo = (Nodo*)malloc(sizeof(Nodo));
     if (nodo == NULL) {
         fprintf(stderr, "No hay memoria suficiente para crear el nodo.\n");
@@ -52,7 +53,7 @@ Nodo* crear_nodo(Process proceso) {
 
 
 // Función para agregar un proceso a la cola (Push), llama crear nodo
-void agregar_proceso(Queue* lista, Process proceso) {
+void agregar_proceso(Queue lista, Process* proceso) {
     Nodo* nodo = crear_nodo(proceso);
     if (lista -> primero == NULL) {
         // Si la cola está vacía, el nodo nuevo será el primero y el último
@@ -67,7 +68,7 @@ void agregar_proceso(Queue* lista, Process proceso) {
 }
 
 //Eliminar proceso (pop python)
-Process eliminar_proceso(Queue* lista) {
+Process* eliminar_proceso(Queue lista) {
     Nodo* nodo_eliminado;
     if (lista -> primero == NULL) {
         // Si la cola está vacía, se retorna un proceso con id -1
@@ -90,7 +91,7 @@ Process eliminar_proceso(Queue* lista) {
     }
 }
 
-int largo_de_lista(Queue* lista) {
+int largo_de_lista(Queue lista) {
     if (lista == NULL) {
         fprintf(stderr, "La lista es NULL.\n");
         abort();
@@ -98,7 +99,7 @@ int largo_de_lista(Queue* lista) {
     return lista -> largo;
 }
 
-void queue_clear(Queue* lista) {
+void queue_clear(Queue lista) {
     if (lista == NULL) {
     fprintf(stderr, "La lista es NULL.\n");
     abort();
