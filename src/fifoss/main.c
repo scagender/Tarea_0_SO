@@ -18,8 +18,8 @@ int main(int argc, char const *argv[])
 	int a= 0;
 	int procesos=0;
 	int menor=0;
-	queue q;
-	q = queue_create();
+	queue cola;
+	cola = queue_create();
 	while(a==0)
 	{
 		clock_t t =clock();
@@ -31,10 +31,15 @@ int main(int argc, char const *argv[])
 			{
 				Process* proceso= process_init(input_file->lines[i][0], i, "READY", atoi(input_file->lines[i][2]), atoi(input_file->lines[i][3]), clock());
 				printf("%s\n", proceso->nombre);
-				queue_push(q, proceso);
-				printf("%d\n", queue_size(q));
+				queue_push(cola, proceso);
 				++procesos;
 			}
+			if (queue_size(cola)>0)
+			{
+				Process* entrante = queue_pop(cola);
+				printf("%d", entrante->pid);
+			}
+			
 			if(procesos>=input_file->len)
 			{
 				a++;

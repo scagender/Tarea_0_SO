@@ -5,7 +5,7 @@
 #include "../process/process.h"
 
 struct node {
-item_type data;
+struct Process* data;
 struct node* next;
 };
 struct _queue {
@@ -72,4 +72,17 @@ fprintf(stderr, "Cannot work with NULL queue.\n");
 abort();
 }
 return q->size;
+}
+queue_pop(queue q) {
+struct node* head = q->head;
+if (q->head == q->tail) {
+q->head = NULL;
+q->tail = NULL;
+} else {
+q->head = q->head->next;
+}
+q->size -= 1;
+Process* data = head->data;
+free(head);
+return data;
 }
