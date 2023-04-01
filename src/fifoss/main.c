@@ -4,6 +4,7 @@
 #include "../queue/queue.h"
 #include "../file_manager/manager.h"
 #include <time.h>
+#include <signal.h>
 
 int main(int argc, char const *argv[])
 {
@@ -38,14 +39,32 @@ int main(int argc, char const *argv[])
 			Process* entrante = queue_pop(cola);
 			entrante->estado = "RUNNING";
 			entrante->wtime = entrante->wtime + clock();
+			entrante -> entradas = entrante -> entradas + 1;
 			if(entrante->entradas == 0)
 			{
 				entrante->rtime = clock();
 			}
 			printf("%s\n", entrante->nombre);
 				++procesos;
-		}
-			
+			pid_t pid = fork();
+			if (pid == -1) {
+				perror("Error en fork()");
+				exit(1);
+			} else if (pid == 0) {
+				printf("1");
+				}
+			else {
+            // Este es el proceso padre
+				int status;
+				waitpid(pid, &status, 0); // Esperar a que el proceso hijo termine
+				printf("El proceso hijo con PID %d terminó con el estado %d.\n", pid, status);
+        	}
+		}									// Este es el proceso hijo
+													//signal(SIGALRM, handler);
+													//alarm(entrante -> burst); // Establecer una alarma para enviar SIGALRM después de 5 segundos
+													//while (1) {
+														// Haz algo en el proceso hijo aquí
+													//}	
 		if(procesos==input_file->len)
 		{
 			a++;
