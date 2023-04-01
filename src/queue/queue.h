@@ -9,5 +9,5 @@ void queue_destroy(queue q);
 void queue_clear(queue q);
 void queue_push(queue q, Process* elem);
 int queue_size(queue q);
-struct Process* queue_pop(queue q);
+Process* queue_pop(queue q);
 #endif

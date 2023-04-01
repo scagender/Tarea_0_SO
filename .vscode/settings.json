@@ -1,6 +1,9 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "process.h": "c"
+        "process.h": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c"
     }
 }

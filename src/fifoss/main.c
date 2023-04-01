@@ -32,15 +32,15 @@ int main(int argc, char const *argv[])
 				Process* proceso= process_init(input_file->lines[i][0], i, "READY", atoi(input_file->lines[i][2]), atoi(input_file->lines[i][3]), clock());
 				printf("%s\n", proceso->nombre);
 				queue_push(cola, proceso);
-				++procesos;
 			}
 			if (queue_size(cola)>0)
 			{
 				Process* entrante = queue_pop(cola);
 				printf("%d", entrante->pid);
+				++procesos;
 			}
 			
-			if(procesos>=input_file->len)
+			if(procesos>input_file->len)
 			{
 				a++;
 			}
