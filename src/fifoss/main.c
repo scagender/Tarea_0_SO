@@ -29,23 +29,29 @@ int main(int argc, char const *argv[])
 		{
 			if(atoi(input_file->lines[i][1]) == menor)
 			{
-				Process* proceso= process_init(input_file->lines[i][0], i, "READY", atoi(input_file->lines[i][2]), atoi(input_file->lines[i][3]), clock());
-				printf("%s\n", proceso->nombre);
+				Process* proceso= process_init(input_file->lines[i][0], i, "READY", atoi(input_file->lines[i][2]), atoi(input_file->lines[i][3]), clock(),0,0,0,0);
 				queue_push(cola, proceso);
 			}
-			if (queue_size(cola)>0)
-			{
-				Process* entrante = queue_pop(cola);
-				printf("%d", entrante->pid);
-				++procesos;
-			}
-			
-			if(procesos>input_file->len)
-			{
-				a++;
-			}
 		}
-		menor++;
+		if (queue_size(cola)>0)
+		{
+			Process* entrante = queue_pop(cola);
+			entrante->estado = "RUNNING";
+			entrante->wtime = entrante->wtime + clock();
+			if(entrante->entradas == 0)
+			{
+				entrante->rtime = clock();
+			}
+			printf("%s\n", entrante->nombre);
+				++procesos;
+		}
+			
+		if(procesos==input_file->len)
+		{
+			a++;
+		}
+		
+	menor++;
 	}
 	char *file_out = (char *)argv[2];
 	FILE* fichero; 

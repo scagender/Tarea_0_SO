@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include "queue.h"
 #include "../process/process.h"
-
+//https://d-michail.github.io/assets/teaching/data-structures/018_QueueImplementation.en.pdf
+//cola fifo sacada de ese link con algunos cambios para que acepte procesos.
 struct node {
 struct Process* data;
 struct node* next;
