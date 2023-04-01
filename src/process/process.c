@@ -1,7 +1,7 @@
 #include "process.h"
-Process* process_init(char nombre,int pid,char estado,double burst,double wait, double inicio)
+#include <stdlib.h> // malloc, calloc, free, etc
+Process* process_init(char* nombre,int pid,char* estado,double burst,double wait, double inicio)
 {
-  // Pedimos memoria para Reptil
   Process* process = malloc(sizeof(Process));
 
   // Lo inicializamos
