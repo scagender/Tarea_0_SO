@@ -40,7 +40,7 @@ int main(int argc, char const *argv[])
 			entrante->estado = "RUNNING";
 			entrante->wtime = entrante->wtime + clock();
 			entrante -> entradas = entrante -> entradas + 1;
-			if(entrante->entradas == 0)
+			if(entrante->entradas == 1)
 			{
 				entrante->rtime = clock();
 			}
@@ -51,15 +51,25 @@ int main(int argc, char const *argv[])
 				perror("Error en fork()");
 				exit(1);
 			} else if (pid == 0) {
-				printf("1");
+				if(entrante -> entradas == 1){
+					int largo = atoi(input_file->lines[entrante->pid][5]);
+					char *args[] = {NULL};
+					for(int contador = 0; contador < largo; ++contador){
+						args[contador] = input_file->lines[entrante -> pid][6+contador];
+					}
+					execv(input_file->lines[entrante -> pid][4], args);
+					}
 				}
-			else {
+				else {
             // Este es el proceso padre
 				int status;
 				waitpid(pid, &status, 0); // Esperar a que el proceso hijo termine
 				printf("El proceso hijo con PID %d terminó con el estado %d.\n", pid, status);
         	}
-		}									// Este es el proceso hijo
+		}
+				
+			
+													// Este es el proceso hijo
 													//signal(SIGALRM, handler);
 													//alarm(entrante -> burst); // Establecer una alarma para enviar SIGALRM después de 5 segundos
 													//while (1) {

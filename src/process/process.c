@@ -15,7 +15,7 @@ Process* process_init(char* nombre,int pid,char* estado,double burst,double wait
     .ttime = ttime,
     .rtime = rtime,
     .wtime = wtime,
-    .entradas = entradas 
+    .entradas = entradas
   };
 
   // Lo retornamos
