@@ -1,4 +1,5 @@
 #pragma once
+#include <unistd.h>
 // Define the struct
 typedef struct Process {
   char* nombre;
@@ -11,6 +12,7 @@ typedef struct Process {
   double rtime; 
   double wtime;
   int entradas;
+  pid_t Hid;
 } Process;
 
 // Declare functions

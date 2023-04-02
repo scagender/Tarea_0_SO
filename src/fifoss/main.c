@@ -6,6 +6,18 @@
 #include <time.h>
 #include <signal.h>
 
+
+void handler(int sig, pid_t Hid) {
+    printf("Se recibió la señal SIGALRM.\n");
+    kill(Hid, SIGSTOP);
+    if (kill(Hid, 0) == 0) { // El proceso hijo sigue vivo
+        printf("El proceso hijo con PID %d sigue vivo. Enviando señal SIGCONT.\n", Hid);
+        kill(Hid, SIGCONT);
+    } else { // El proceso hijo ya terminó
+        printf("El proceso hijo con PID %d ya terminó.\n", Hid);
+    }
+}
+
 int main(int argc, char const *argv[])
 {
 	/*Lectura del input*/
@@ -46,11 +58,11 @@ int main(int argc, char const *argv[])
 			}
 			printf("%s\n", entrante->nombre);
 				++procesos;
-			pid_t pid = fork();
-			if (pid == -1) {
+			pid_t Hid = fork();					//Ocupar pid es reescribir el del padre
+			if (Hid == -1) {
 				perror("Error en fork()");
 				exit(1);
-			} else if (pid == 0) {
+			} else if (Hid == 0) {
 				if(entrante -> entradas == 1){
 					int largo = atoi(input_file->lines[entrante->pid][5]);
 					char *args[] = {NULL};
@@ -59,15 +71,21 @@ int main(int argc, char const *argv[])
 					}
 					execv(input_file->lines[entrante -> pid][4], args);
 					}
+				exit(0);
 				}
-				else {
-            // Este es el proceso padre
+				else { // Este es el proceso padre
 				int status;
-				waitpid(pid, &status, 0); // Esperar a que el proceso hijo termine
-				printf("El proceso hijo con PID %d terminó con el estado %d.\n", pid, status);
-        	}
+				waitpid(Hid, &status, WUNTRACED); // Esperar a que el proceso hijo termine o sea detenido, esto hay que ocupar según el enunciado
+				if (WIFSTOPPED(status)) {
+					printf("El proceso hijo con PID %d ha sido detenido.\n", Hid);
+					entrante->Hid = -1; // Establecer pid en -1 para indicar que el proceso no tiene un hijo en ejecución
+				} else {
+					printf("El proceso hijo con PID %d terminó con el estado %d.\n", Hid, status);
+					entrante->estado = "FINISHED";
+					entrante->Hid = -1; // Establecer pid en -1 para indicar que el proceso no tiene un hijo en ejecución
+    }
 		}
-				
+		}		
 			
 													// Este es el proceso hijo
 													//signal(SIGALRM, handler);
