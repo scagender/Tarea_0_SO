@@ -16,5 +16,5 @@ typedef struct Process {
 } Process;
 
 // Declare functions
-Process* process_init(char* nombre,int pid,char* estado,double burst,double wait, double inicio, double ttime, double rtime, double wtime, int entradas);
+Process* process_init(char* nombre,int pid,char* estado,double burst,double wait, double inicio, double ttime, double rtime, double wtime);
 void process_destroy(Process *process);

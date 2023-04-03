@@ -5,17 +5,19 @@
 #include "../file_manager/manager.h"
 #include <time.h>
 #include <signal.h>
+#include <string.h>
 
 
-void handler(int sig, pid_t Hid) {
-    printf("Se recibió la señal SIGALRM.\n");
-    kill(Hid, SIGSTOP);
-    if (kill(Hid, 0) == 0) { // El proceso hijo sigue vivo
-        printf("El proceso hijo con PID %d sigue vivo. Enviando señal SIGCONT.\n", Hid);
-        kill(Hid, SIGCONT);
-    } else { // El proceso hijo ya terminó
-        printf("El proceso hijo con PID %d ya terminó.\n", Hid);
-    }
+void handler(int sig) {					//Parar proceso
+    pid_t pid = getpid(); //Padre
+    printf("Se recibió la señal SIGALRM en el proceso %d, por lo que se va a parar el proceso.\n", pid);
+    kill(pid, SIGSTOP);
+}
+
+void handler2(int sig) {				//Reanudar Proceso
+    pid_t pid = getpid();
+    printf("Se recibió la señal SIGCOUNT para el proceso %d, por lo que se va a reanudar su ejecución.\n", pid);
+    kill(pid, SIGCONT);			//Con esto se sigue la ejecucción
 }
 
 int main(int argc, char const *argv[])
@@ -35,58 +37,91 @@ int main(int argc, char const *argv[])
 	cola = queue_create();
 	while(a==0)
 	{
-		clock_t t =clock();
+		clock_t t = clock();
 		double tt = t - tiempo_inicio;
 		double tta = tt / CLOCKS_PER_SEC;
 		for (int i = 0; i < input_file->len; ++i)
 		{
 			if(atoi(input_file->lines[i][1]) == menor)
 			{
-				Process* proceso= process_init(input_file->lines[i][0], i, "READY", atoi(input_file->lines[i][2]), atoi(input_file->lines[i][3]), clock(),0,0,0,0);
+				Process* proceso= process_init(input_file->lines[i][0], i, "READY", atoi(input_file->lines[i][2]), atoi(input_file->lines[i][3]), clock(),0,0,0);
 				queue_push(cola, proceso);
 			}
 		}
+		
 		if (queue_size(cola)>0)
 		{
 			Process* entrante = queue_pop(cola);
 			entrante->estado = "RUNNING";
 			entrante->wtime = entrante->wtime + clock();
-			entrante -> entradas = entrante -> entradas + 1;
+			entrante -> entradas += 1;
+			printf("Número de entradas: %i\n", entrante -> entradas);
 			if(entrante->entradas == 1)
 			{
 				entrante->rtime = clock();
 			}
 			printf("%s\n", entrante->nombre);
-				++procesos;
 			pid_t Hid = fork();					//Ocupar pid es reescribir el del padre
+			entrante->Hid = Hid;
+			printf("Soy el proceso con Hid: %d\n", Hid);
 			if (Hid == -1) {
 				perror("Error en fork()");
 				exit(1);
-			} else if (Hid == 0) {
+			} else if (Hid == 0) {				//Hijo
 				if(entrante -> entradas == 1){
+					printf("Entre\n");
 					int largo = atoi(input_file->lines[entrante->pid][5]);
-					char *args[] = {NULL};
-					for(int contador = 0; contador < largo; ++contador){
-						args[contador] = input_file->lines[entrante -> pid][6+contador];
-					}
+					char *args[] = {};
+					if (largo > 0){						//De esta forma funcionan todos los ejecutables
+						args[0] = input_file->lines[entrante -> pid][4];
+						for(int contador = 1; contador <= largo; ++contador){
+							args[contador] = input_file->lines[entrante -> pid][5+contador];
+							args[contador+1] = NULL;
+						}
+						}
+
+					else{args[0] = NULL;}
+					
+
+					printf("Voy a ejecutar\n");
 					execv(input_file->lines[entrante -> pid][4], args);
-					}
-				exit(0);
+					perror("execv() failed\n");	// El código debajo de execv() solo se ejecutará si falla la ejecución del comando
+        			exit(1);
+					}						//exit (0); wait(retval)
+				printf("Esto tiempo va a correr antes de esperar: %f\n", entrante->burst);
+				signal(SIGALRM, handler);	//Ahora si para el hijo, Esta es la conexion entre alarma y quien la maneja
+											//Al terminar envia una alarma de tipo SIGALARM
+
 				}
-				else { // Este es el proceso padre
+			else { 							// Este es el proceso padre
+			//wait(&status) == sleep; WEXISTATUS(status) es pa leer el tipo de dato q tira wait
 				int status;
-				waitpid(Hid, &status, WUNTRACED); // Esperar a que el proceso hijo termine o sea detenido, esto hay que ocupar según el enunciado
-				if (WIFSTOPPED(status)) {
-					printf("El proceso hijo con PID %d ha sido detenido.\n", Hid);
-					entrante->Hid = -1; // Establecer pid en -1 para indicar que el proceso no tiene un hijo en ejecución
-				} else {
-					printf("El proceso hijo con PID %d terminó con el estado %d.\n", Hid, status);
-					entrante->estado = "FINISHED";
-					entrante->Hid = -1; // Establecer pid en -1 para indicar que el proceso no tiene un hijo en ejecución
-    }
-		}
-		}		
-			
+				printf("Se envió la alarma de: %f segundos\n", entrante->burst);
+				//alarm(entrante->burst);
+				waitpid(Hid, &status, 0); 
+                while (1) { 
+                    if (WIFEXITED(status)) {
+						printf("El proceso hijo terminó normalmente.\n");
+						entrante->estado = "FINISHED";
+						++procesos;
+                        entrante->Hid = -1;
+						printf("Se cancela la alarma.\n");
+						alarm(0);
+                        break;
+					} else if (!WIFSIGNALED(status)) {
+						printf("El proceso hijo fue interrumpido por la señal %d.\n", WTERMSIG(status));
+						entrante->estado = "WAITING";
+						printf("Voy a mimir: %f\n", entrante->wait);
+						sleep(entrante->wait);
+						printf("Ahora me voy al final de la cola");
+						queue_push(cola, entrante);
+						break;
+					}
+                }	
+				
+			}
+				}
+	
 													// Este es el proceso hijo
 													//signal(SIGALRM, handler);
 													//alarm(entrante -> burst); // Establecer una alarma para enviar SIGALRM después de 5 segundos
@@ -109,4 +144,4 @@ int main(int argc, char const *argv[])
  	
  	return 0;
 	
-}
+}																//./fifoss example.txt out.csv
