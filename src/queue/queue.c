@@ -76,16 +76,30 @@ return q->size;
 }
 
 Process* queue_pop(queue q) {
-struct node* head = q->head;
-if (q->head == q->tail) {
-q->head = NULL;
-q->tail = NULL;
-} else {
-q->head = q->head->next;
-}
-q->size -= 1;
-Process* data;
-data = head->data;
-free(head);
-return data;
+    struct node* head = q->head;
+    if (q->head == q->tail) {
+    q->head = NULL;
+    q->tail = NULL;
+    } else {
+        for (int largo = 0; largo<= queue_size(q); ++largo )
+        {   
+            if (head->data->estado=="READY")
+            {
+                q->head=q->head->next;
+                break;
+            }
+            else
+            {
+                head = q->head->next;
+                if (head == NULL){
+                    largo = 0;
+                }
+            }
+        }
+    }
+    q->size -= 1;
+    Process* data;
+    data = head->data;
+    free(head);
+    return data;
 }
