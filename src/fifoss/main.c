@@ -35,25 +35,17 @@ int main(int argc, char const *argv[])
 		}
 		if (queue_size(cola)>0)
 		{
-			for(int i=0;i<queue_size(cola);++i)
-			{
-				Process* revisado = queue_pop(cola);
-				if(revisado->estado == "WAITING")				//De mas
-				{
-					double tiempo_esperando = (clock()-revisado->inicio_w)/CLOCKS_PER_SEC;
-					if (tiempo_esperando>=revisado->wait)
-					{
-						revisado->estado ="READY";
-						queue_push(cola, revisado);
-					}
-				}
-				else
-				{
-					queue_push(cola,revisado);
+			int listo1 = 0;
+			Process* entrante;
+			while(listo1 == 0){
+				revisar_queue(cola, clock());
+				entrante = queue_pop_ready(cola);			// Saca un NULL cuando todos estan en WAIT
+				if (entrante != NULL){
+					listo1 = 1;
+					break;
 				}
 			}
-			printf("LLega aca\n");
-			Process* entrante = queue_pop(cola);			// Saca un NULL cuando todos estan en WAIT
+			printf("Empiezo el proceso\n");
 			entrante->estado = "RUNNING";
 			entrante->wtime = entrante->wtime + clock();
 			entrante -> entradas = entrante -> entradas + 1;
@@ -64,7 +56,7 @@ int main(int argc, char const *argv[])
 			printf("%s\n", entrante->nombre);
 			printf("%d\n", entrante->entradas);
 			int entradas= entrante->entradas;
-			if (entrante->entradas>1)
+			if (entrante -> entradas > 1)
 			{
 				int pid2= entrante->pid;
 				int status;
