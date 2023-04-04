@@ -77,11 +77,11 @@ abort();
 return q->size;
 }
 
-Process* queue_pop_ready(queue q) {
+Process* queue_pop_ready(queue q, double tiempo_actual) {
     struct node* nodo = q->head;
     struct node* prev = NULL;
-    printf("Estado: %s\n", nodo->data->estado);
     while (nodo != NULL) {
+        revisar_nodo(tiempo_actual, nodo->data);
         if (strcmp(nodo->data->estado, "READY") == 0) {
             // el nodo actual tiene estado "READY"
             if (prev == NULL) {
@@ -91,7 +91,6 @@ Process* queue_pop_ready(queue q) {
                 // el nodo actual no es el primero de la lista
                 prev->next = nodo->next;
             }
-            printf("Retorno algo diferente a NULL\n");
             return nodo->data; // devolvemos el nodo actual
         }
         //Buscamos en el siguiente nodo
@@ -100,7 +99,6 @@ Process* queue_pop_ready(queue q) {
     }
 
   // no se encontró ningún nodo con estado "READY"
-  printf("Retorno NULL\n");
   return NULL;
 }
 
@@ -120,27 +118,13 @@ Process* queue_pop(queue q) {
     }
 
 
-void revisar_queue(queue cola, double tiempo_actual){
-    struct node* nodo_revisado = cola->head;
-    while (nodo_revisado){
-        Process* revisado = nodo_revisado->data;
-        if (revisado->estado == "WAITING"){
-            printf("Esta waiting\n");
-            double tiempo_esperando = (double)(tiempo_actual-revisado->inicio_w)/CLOCKS_PER_SEC;
-            printf("El tiempo esta bien: %f\n", tiempo_esperando);
-            if (tiempo_esperando >= revisado->wait)
-            {
-                printf("Ahora Esta ready\n");
-                revisado-> estado = "READY";
-            }
-            else{printf("No esta ready todavia\n");}
-        }
-        else
+void revisar_nodo(double tiempo_actual, Process* revisado){
+    if (strcmp(revisado->estado, "WAITING") == 0){
+        double tiempo_esperando = (double)(tiempo_actual-revisado->inicio_w)/CLOCKS_PER_SEC;
+        if (tiempo_esperando >= revisado->wait)
         {
-            printf("Esta ready\n");
+            revisado-> estado = "READY";
         }
-        nodo_revisado = nodo_revisado->next;
-        }
-
+    }
 }
     

@@ -10,6 +10,6 @@ void queue_clear(queue q);
 void queue_push(queue q, Process* elem);
 int queue_size(queue q);
 Process* queue_pop(queue q);
-Process* queue_pop_ready(queue q);
-void revisar_queue(queue q, double tiempo_actual);
+Process* queue_pop_ready(queue q, double tiempo_actual);
+void revisar_nodo(double tiempo_actual, Process* nodo);
 #endif

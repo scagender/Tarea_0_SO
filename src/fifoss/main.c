@@ -38,8 +38,7 @@ int main(int argc, char const *argv[])
 			int listo1 = 0;
 			Process* entrante;
 			while(listo1 == 0){
-				revisar_queue(cola, clock());
-				entrante = queue_pop_ready(cola);			// Saca un NULL cuando todos estan en WAIT
+				entrante = queue_pop_ready(cola, (double)clock());			// Saca un NULL cuando todos estan en WAIT
 				if (entrante != NULL){
 					listo1 = 1;
 					break;
