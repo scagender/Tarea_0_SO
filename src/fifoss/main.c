@@ -7,7 +7,7 @@
 #include<sys/wait.h>
 #include<time.h>
 
-int main(int argc, char const *argv[])
+int main(int argc, char const *argv[])						//Arreglar el childmine, deben llegar al mismo tiempo en test4
 {
 	/*Lectura del input*/
 	char *file_name = (char *)argv[1];
@@ -100,7 +100,7 @@ int main(int argc, char const *argv[])
      	 					printf("El proceso hijo termino\n");
 							double turn_time = (double)(clock()-entrante->inicio)/CLOCKS_PER_SEC;
                             int exit_code = WEXITSTATUS(status);
-                            fprintf(fichero, "%s,%i,%i,%f,%f,%f,%i", entrante->nombre, entrante->pid, entrante->entradas,turn_time,entrante->rtime,entrante->wtime,exit_code);
+                            fprintf(fichero, "%s,%i,%i,%f,%f,%f,%i\n", entrante->nombre, entrante->pid, entrante->entradas,turn_time,entrante->rtime,entrante->wtime,exit_code);
 							procesos++;
 							break;
 							}
@@ -114,7 +114,7 @@ int main(int argc, char const *argv[])
 					if(entrante -> entradas == 1)
 					{
 						int largo = atoi(input_file->lines[entrante->pid][5]);
-						char *args[] = {NULL};
+						char *args[] = {input_file->lines[entrante -> pid][4], NULL};
 						for(int contador = 0; contador < largo; ++contador)
 						{
 							args[contador] = input_file->lines[entrante -> pid][6+contador];
@@ -154,7 +154,7 @@ int main(int argc, char const *argv[])
      	 					printf("El proceso hijo termino\n");			// Eliminar proceso y cola
 							double turn_time = (double)(clock()-entrante->inicio)/CLOCKS_PER_SEC;
                             int exit_code = WEXITSTATUS(status);
-                            fprintf(fichero, "%s,%i,%i,%f,%f,%f,%i", entrante->nombre, entrante->pid, entrante->entradas,turn_time,entrante->rtime,entrante->wtime,exit_code);
+                            fprintf(fichero, "%s,%i,%i,%f,%f,%f,%i\n", entrante->nombre, entrante->pid, entrante->entradas,turn_time,entrante->rtime,entrante->wtime,exit_code);
 							procesos++;
 							break;
 							}
