@@ -41,7 +41,6 @@ int main(int argc, char const *argv[])						//Arreglar el childmine, deben llega
 			int listo1 = 0;
 			Process* entrante;
 			while(listo1 == 0){
-				printf("No hay nadie");
 				for (int i = 0; i < input_file->len; ++i)				//revisa si llego otro proceso
 				{
 					if(atoi(input_file->lines[i][1]) >= ultima_entrada && atoi(input_file->lines[i][1]) <= (clock()-tiempo_inicio)/CLOCKS_PER_SEC)
@@ -103,6 +102,7 @@ int main(int argc, char const *argv[])						//Arreglar el childmine, deben llega
                             int exit_code = WEXITSTATUS(status);
                             fprintf(fichero, "%s,%i,%i,%f,%f,%f,%i\n", entrante->nombre, entrante->pid, entrante->entradas,turn_time,entrante->rtime,entrante->wtime,exit_code);
 							procesos++;
+							process_destroy(entrante);
 							break;
 							}
 					}
@@ -159,11 +159,10 @@ int main(int argc, char const *argv[])						//Arreglar el childmine, deben llega
 							{ // El proceso hijo terminó debido a una señal o un error
      	 					printf("El proceso hijo termino\n");			// Eliminar proceso y cola
 							double turn_time = (double)(clock()-entrante->inicio)/CLOCKS_PER_SEC;
-							printf("Hola?3");
                             int exit_code = WEXITSTATUS(status);
-							printf("Hola?4");
                             fprintf(fichero, "%s,%i,%i,%f,%f,%f,%i\n", entrante->nombre, entrante->pid, entrante->entradas,turn_time,entrante->rtime,entrante->wtime,exit_code);
 							procesos++;
+							process_destroy(entrante);
 							break;
 							}
         			}
@@ -173,6 +172,7 @@ int main(int argc, char const *argv[])						//Arreglar el childmine, deben llega
 		if(procesos==input_file->len)
 		{
 			a++;
+			queue_destroy(cola);
 		}
 	}
 
