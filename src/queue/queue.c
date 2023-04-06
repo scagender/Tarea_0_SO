@@ -30,51 +30,53 @@ return q;
 }
 
 void queue_destroy(queue q) {
-if (q == NULL) {
-fprintf(stderr, "Cannot destroy queue\n");
-abort();
-}
-queue_clear(q);
-free(q);
-}
+    if (q == NULL) {
+    fprintf(stderr, "Cannot destroy queue\n");
+    abort();
+    }
+    queue_clear(q);
+    free(q);
+    }
+
 void queue_clear(queue q) {
-if (q==NULL) {
-fprintf(stderr, "Cannot work with NULL queue.\n");
-abort();
-}
-while(q->head != NULL) {
-struct node* tmp = q->head;
-q->head = q->head->next;
-free(tmp);
-}
-q->tail = NULL;
-q->size = 0;
+    if (q==NULL) {
+    fprintf(stderr, "Cannot work with NULL queue.\n");
+    abort();
+    }
+    while(q->head != NULL) {
+    struct node* tmp = q->head;
+    q->head = q->head->next;
+    free(tmp);
+    }
+    q->tail = NULL;
+    q->size = 0;
 }
 
 void queue_push(queue q, Process* elem) {
-struct node* n;
-n = (struct node*) malloc(sizeof(struct node));
-if (n == NULL) {
-fprintf(stderr, "Insufficient memory to \
-create node.\n");
-abort();
+    struct node* n;
+    n = (struct node*) malloc(sizeof(struct node));
+    if (n == NULL) {
+    fprintf(stderr, "Insufficient memory to \
+    create node.\n");
+    abort();
+    }
+    n->data = elem;
+    n->next = NULL;
+    if (q->head == NULL) {
+    q->head = q->tail = n;
+    } else {
+    q->tail->next = n;
+    q->tail = n;
+    }
+    q->size += 1;
 }
-n->data = elem;
-n->next = NULL;
-if (q->head == NULL) {
-q->head = q->tail = n;
-} else {
-q->tail->next = n;
-q->tail = n;
-}
-q->size += 1;
-}
+
 int queue_size(queue q) {
-if (q==NULL) {
-fprintf(stderr, "Cannot work with NULL queue.\n");
-abort();
-}
-return q->size;
+    if (q==NULL) {
+    fprintf(stderr, "Cannot work with NULL queue.\n");
+    abort();
+    }
+    return q->size;
 }
 
 Process* queue_pop_ready(queue q, double tiempo_actual) {
@@ -91,7 +93,11 @@ Process* queue_pop_ready(queue q, double tiempo_actual) {
                 // el nodo actual no es el primero de la lista
                 prev->next = nodo->next;
             }
-            return nodo->data; // devolvemos el nodo actual
+            q->size -= 1;
+            Process* nodo1 = nodo->data;
+            free(nodo);
+            free(prev);
+            return nodo1; // devolvemos el nodo actual
         }
         //Buscamos en el siguiente nodo
         prev = nodo;

@@ -56,15 +56,16 @@ int main(int argc, char const *argv[])						//Arreglar el childmine, deben llega
 					break;
 				}
 			}
+			double tiempo_wait = (clock()-entrante->inicio_w)/CLOCKS_PER_SEC;
+			entrante->wtime = entrante->wtime + tiempo_wait;
 			entrante->estado = "RUNNING";
-			entrante->wtime = entrante->wtime + clock();
 			entrante -> entradas = entrante -> entradas + 1;
 			if(entrante->entradas == 1)
 			{
 				entrante->rtime = (clock()-entrante->inicio)/CLOCKS_PER_SEC;
 			}
 			printf("%s\n", entrante->nombre);
-			printf("%d\n", entrante->entradas);
+			printf("Entradas %d\n", entrante->entradas);
 			int entradas= entrante->entradas;
 			if (entrante -> entradas > 1)
 			{
@@ -107,7 +108,7 @@ int main(int argc, char const *argv[])						//Arreglar el childmine, deben llega
 							}
 					}
 			}
-			if (entrante-> entradas ==1)
+			else if (entrante-> entradas == 1)
 			{
 				int hpid = fork();
 				if (hpid == 0) 
@@ -121,6 +122,9 @@ int main(int argc, char const *argv[])						//Arreglar el childmine, deben llega
 						{
 							args[contador+1] = input_file->lines[entrante -> pid][6+contador];
 							paso = 1;
+							if (paso == 1 && largo-contador ==1){
+								args[largo+1] = NULL;
+							}
 						}
 						if (paso == 0){
 							args[1] = NULL;
@@ -177,6 +181,7 @@ int main(int argc, char const *argv[])						//Arreglar el childmine, deben llega
 	}
 
 	input_file_destroy(input_file);
+	fclose(fichero);
  	
  	return 0;
 	
