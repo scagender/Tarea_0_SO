@@ -114,10 +114,15 @@ int main(int argc, char const *argv[])						//Arreglar el childmine, deben llega
 					if(entrante -> entradas == 1)
 					{
 						int largo = atoi(input_file->lines[entrante->pid][5]);
-						char *args[] = {input_file->lines[entrante -> pid][4], NULL};
+						char *args[] = {input_file->lines[entrante -> pid][4]};
+						int paso = 0;
 						for(int contador = 0; contador < largo; ++contador)
 						{
-							args[contador] = input_file->lines[entrante -> pid][6+contador];
+							args[contador+1] = input_file->lines[entrante -> pid][6+contador];
+							paso = 1;
+						}
+						if (paso == 0){
+							args[1] = NULL;
 						}
 						printf("Empieza la ejecucción\n");
 						execvp(input_file->lines[entrante -> pid][4], args);
